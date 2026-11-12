@@ -35,7 +35,7 @@
 
   async function initStudent(){
     const s=await root().child("players/"+user.uid).once("value");
-    if(s.exists()){hide("studentJoin");show("studentGame");$("playerName").textContent=s.val().nickname;bindStudent()}
+    if(s.exists()){hide("studentJoin");show("studentGame");if($("playerName")) $("playerName").textContent=s.val().nickname;bindStudent()}
     else{show("studentJoin");hide("studentGame")}
   }
   $("joinBtn")?.addEventListener("click",async()=>{
@@ -43,7 +43,7 @@
     if(nickname.length<2){$("joinError").textContent="Informe um apelido com pelo menos 2 caracteres.";return}
     const c=(await root().child("config").once("value")).val();
     if(!c||c.status!=="lobby"){$("joinError").textContent="A sala não está aberta para entrada.";return}
-    try{await root().child("players/"+user.uid).set({nickname,gameId:c.gameId,joinedAt:firebase.database.ServerValue.TIMESTAMP});$("playerName").textContent=nickname;hide("studentJoin");show("studentGame");bindStudent()}catch(e){$("joinError").textContent=e.message}
+    try{await root().child("players/"+user.uid).set({nickname,gameId:c.gameId,joinedAt:firebase.database.ServerValue.TIMESTAMP});if($("playerName")) $("playerName").textContent=nickname;hide("studentJoin");show("studentGame");bindStudent()}catch(e){$("joinError").textContent=e.message}
   });
   function bindStudent(){
     root().child("config").on("value",s=>{config=s.val();renderStudent()});
@@ -344,5 +344,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=2100";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=2110";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

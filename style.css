@@ -253,3 +253,43 @@ footer{
   h1{font-size:2rem}
   #studentTitle{font-size:1.35rem}
 }
+
+.choice{
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.correct-answer{
+  background:#ecfdf5 !important;
+  border:2px solid #22c55e !important;
+  color:#14532d !important;
+}
+.wrong-answer{
+  background:#fef2f2 !important;
+  border:2px solid #ef4444 !important;
+  color:#7f1d1d !important;
+}
+.chosen-answer{
+  position:relative;
+}
+.answer-content{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+.answer-tag{
+  display:inline-flex;
+  margin-top:8px;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:.7rem;
+  font-weight:900;
+  letter-spacing:.05em;
+}
+.answer-tag-correct{
+  background:#dcfce7;
+  color:#166534;
+}
+.answer-tag-chosen{
+  background:#fee2e2;
+  color:#991b1b;
+}

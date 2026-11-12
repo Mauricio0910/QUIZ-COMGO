@@ -113,7 +113,6 @@
             ev.stopPropagation();
             submit(q.id, btn.dataset.id);
           };
-          btn.addEventListener("pointerup", handler, {once:true});
           btn.addEventListener("click", handler, {once:true});
         });
       }
@@ -137,18 +136,69 @@
 
     hide("timerWrap");
     show("studentFeedback");
-    const k=key?.answers?.[q.id];
-    const corr=q.choices.find(x=>x.id===k?.correctId);
-    $("studentState").textContent="RESPOSTA CORRETA";
-    $("choices").innerHTML=q.choices.map(o=>`
-      <button class="teacher-option ${k?.correctId===o.id?'correct':''}" disabled>
-        ${esc(o.id.toUpperCase()+") "+o.text)}
-      </button>
-    `).join("");
-    $("studentFeedback").className="feedback "+((ans?.choice===k?.correctId)?"ok":"bad");
-    $("studentFeedback").innerHTML=(ans?.choice===k?.correctId
-      ? `<strong>Você acertou.</strong><br>Pontuação calculada por acerto + rapidez.`
-      : `<strong>Você errou.</strong><br>Resposta correta: <strong>${esc(corr?.id?.toUpperCase()||"")} ${esc(corr?.text||"")}</strong>`);
+
+    // A tela do aluno usa a resposta oficial publicada pelo professor
+    // no Firebase ao clicar em "Revelar resposta".
+    const roundSnap=await root().child(`rounds/${q.id}`).once("value");
+    const round=roundSnap.val()||{};
+    const correctId=round.correctId||null;
+    const explanation=round.explanation||"";
+
+    const studentChoice=ans?.choice||null;
+    const correctChoice=q.choices.find(o=>o.id===correctId);
+    const isCorrect=!!studentChoice && !!correctId && studentChoice===correctId;
+
+    $("studentState").textContent=correctId ? "RESPOSTA REVELADA" : "AGUARDANDO RESPOSTA OFICIAL";
+
+    $("choices").innerHTML=q.choices.map(o=>{
+      const correct=o.id===correctId;
+      const chosen=o.id===studentChoice;
+
+      let cssClass="teacher-option";
+      if(correct) cssClass+=" correct-answer";
+      if(chosen && !correct) cssClass+=" wrong-answer";
+      if(chosen) cssClass+=" chosen-answer";
+
+      let tag="";
+      if(correct){
+        tag='<span class="answer-tag answer-tag-correct">✓ RESPOSTA CORRETA</span>';
+      }else if(chosen){
+        tag='<span class="answer-tag answer-tag-chosen">SUA RESPOSTA</span>';
+      }
+
+      return `
+        <div class="${cssClass}">
+          <div class="answer-content">
+            <strong>${esc(o.id.toUpperCase())}.</strong>
+            <span>${esc(o.text)}</span>
+          </div>
+          ${tag}
+        </div>
+      `;
+    }).join("");
+
+    if(!correctId){
+      $("studentFeedback").className="feedback";
+      $("studentFeedback").innerHTML="<strong>Aguardando o professor revelar a resposta correta.</strong>";
+    }else if(!studentChoice){
+      $("studentFeedback").className="feedback bad";
+      $("studentFeedback").innerHTML=
+        `<strong>Você não respondeu dentro do tempo.</strong><br>`+
+        `Resposta correta: <strong>${esc(correctChoice?.id?.toUpperCase()||"")} — ${esc(correctChoice?.text||"")}</strong>`+
+        (explanation?`<br><br>${esc(explanation)}`:"");
+    }else if(isCorrect){
+      $("studentFeedback").className="feedback ok";
+      $("studentFeedback").innerHTML=
+        `<strong>Você acertou!</strong><br>`+
+        `Resposta correta: <strong>${esc(correctChoice?.id?.toUpperCase()||"")} — ${esc(correctChoice?.text||"")}</strong>`+
+        (explanation?`<br><br>${esc(explanation)}`:"");
+    }else{
+      $("studentFeedback").className="feedback bad";
+      $("studentFeedback").innerHTML=
+        `<strong>Sua resposta foi registrada, mas está incorreta.</strong><br>`+
+        `Resposta correta: <strong>${esc(correctChoice?.id?.toUpperCase()||"")} — ${esc(correctChoice?.text||"")}</strong>`+
+        (explanation?`<br><br>${esc(explanation)}`:"");
+    }
   }
 
   async function submit(qid,choice){
@@ -344,5 +394,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=2110";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=2120";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

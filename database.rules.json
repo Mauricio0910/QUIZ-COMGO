@@ -1,61 +1,39 @@
 {
   "rules": {
     "game": {
+      ".read": "auth != null",
       ".write": "auth != null && auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true",
       "players": {
         "$uid": {
           ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('game/config/status').val() === 'lobby' && newData.child('gameId').val() === root.child('game/config/gameId').val()",
-          ".validate": "newData.hasChildren(['nickname','gameId','joinedAt']) && newData.child('nickname').isString() && newData.child('nickname').val().length >= 2 && newData.child('nickname').val().length <= 28 && newData.child('joinedAt').val() === now"
-        },
-        ".read": "auth != null"
+          ".validate": "newData.hasChildren(['nickname','gameId','joinedAt']) && newData.child('nickname').isString() && newData.child('nickname').val().length >= 2 && newData.child('nickname').val().length <= 28"
+        }
       },
       "answers": {
         "$questionId": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('game/config/status').val() === 'question' && root.child('game/config/questionId').val() === $questionId && root.child('game/players').child(auth.uid).child('gameId').val() === root.child('game/config/gameId').val() && now >= root.child('game/config/roundStartedAt').val() && now <= root.child('game/config/roundEndsAt').val()",
-            ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/) && newData.child('at').val() === now",
-            ".read": "auth != null && auth.uid === $uid"
+            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('game/config/status').val() === 'question' && root.child('game/config/questionId').val() === $questionId && root.child('game/players').child(auth.uid).child('gameId').val() === root.child('game/config/gameId').val()",
+            ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/)"
           }
-        },
-        ".read": "auth != null && auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true"
-      },
-      "config": {
-        ".read": "auth != null"
-      },
-      "scores": {
-        ".read": "auth != null"
-      },
-      "rounds": {
-        ".read": "auth != null"
+        }
       }
     },
     "complianceQuiz": {
+      ".read": "auth != null",
       ".write": "auth != null && auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true",
       "players": {
         "$uid": {
           ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('complianceQuiz/config/status').val() === 'lobby' && newData.child('gameId').val() === root.child('complianceQuiz/config/gameId').val()",
-          ".validate": "newData.hasChildren(['nickname','gameId','joinedAt']) && newData.child('nickname').isString() && newData.child('nickname').val().length >= 2 && newData.child('nickname').val().length <= 28 && newData.child('joinedAt').val() === now"
-        },
-        ".read": "auth != null"
+          ".validate": "newData.hasChildren(['nickname','gameId','joinedAt']) && newData.child('nickname').isString() && newData.child('nickname').val().length >= 2 && newData.child('nickname').val().length <= 28"
+        }
       },
       "answers": {
         "$questionId": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('complianceQuiz/config/status').val() === 'question' && root.child('complianceQuiz/config/questionId').val() === $questionId && root.child('complianceQuiz/players').child(auth.uid).child('gameId').val() === root.child('complianceQuiz/config/gameId').val() && now >= root.child('complianceQuiz/config/roundStartedAt').val() && now <= root.child('complianceQuiz/config/roundEndsAt').val()",
-            ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/) && newData.child('at').val() === now",
-            ".read": "auth != null && auth.uid === $uid"
+            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('complianceQuiz/config/status').val() === 'question' && root.child('complianceQuiz/config/questionId').val() === $questionId && root.child('complianceQuiz/players').child(auth.uid).child('gameId').val() === root.child('complianceQuiz/config/gameId').val()",
+            ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/)"
           }
-        },
-        ".read": "auth != null && auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true"
-      },
-      "config": {
-        ".read": "auth != null"
-      },
-      "scores": {
-        ".read": "auth != null"
-      },
-      "rounds": {
-        ".read": "auth != null"
+        }
       }
     }
   }

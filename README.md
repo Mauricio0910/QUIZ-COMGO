@@ -18,3 +18,10 @@ Abra o endereço publicado com `?professor=1`, entre com Google e carregue local
 Não publique esse gabarito no GitHub.
 
 Fluxo: Nova sala / zerar → alunos entram → Iniciar jogo → Mostrar resposta → Próxima pergunta → Encerrar → Exportar ranking CSV.
+
+
+## Configuração corrigida
+Este pacote está configurado para o projeto Firebase `comex-quiz-fc8a2`, usando o nó
+`complianceQuiz`. O arquivo `database.rules.json` contém as regras correspondentes,
+mas elas precisam ser publicadas manualmente no Firebase Console em
+Realtime Database > Rules.

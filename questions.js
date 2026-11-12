@@ -1,11 +1,12 @@
 window.COMPLIANCE_QUESTIONS = [
   {
     "id": "q01",
-    "question": "Qual é a finalidade central do compliance nas organizações?",
+    "difficulty": "fácil",
+    "question": "Qual é a finalidade central de um programa de compliance?",
     "choices": [
       {
         "id": "a",
-        "text": "Substituir integralmente a administração da empresa."
+        "text": "Substituir os órgãos de administração da organização."
       },
       {
         "id": "b",
@@ -13,72 +14,75 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "c",
-        "text": "Atuar apenas depois que uma infração já foi comprovada."
+        "text": "Atuar apenas depois da ocorrência de uma infração."
       },
       {
         "id": "d",
-        "text": "Eliminar qualquer risco empresarial existente."
+        "text": "Eliminar integralmente os riscos empresariais."
       },
       {
         "id": "e",
-        "text": "Restringir-se à elaboração de contratos e pareceres jurídicos."
+        "text": "Restringir-se ao controle de contratos."
       }
     ]
   },
   {
     "id": "q02",
-    "question": "Um programa de compliance é considerado efetivo quando:",
+    "difficulty": "média",
+    "question": "Qual alternativa melhor diferencia a mera existência formal de políticas de um programa de compliance efetivo?",
     "choices": [
       {
         "id": "a",
-        "text": "Possui grande quantidade de políticas internas, independentemente da aplicação."
+        "text": "A existência de políticas basta, ainda que não sejam aplicadas."
       },
       {
         "id": "b",
-        "text": "Seus mecanismos funcionam na prática, são monitorados e geram evidências de aplicação."
+        "text": "A efetividade exige aplicação prática, monitoramento, responsabilização e evidências de funcionamento."
       },
       {
         "id": "c",
-        "text": "É administrado exclusivamente pelo departamento jurídico."
+        "text": "A efetividade depende exclusivamente da quantidade de treinamentos realizados."
       },
       {
         "id": "d",
-        "text": "É utilizado somente em empresas que contratam com o poder público."
+        "text": "A efetividade é comprovada apenas pela inexistência de denúncias."
       },
       {
         "id": "e",
-        "text": "Depende apenas da existência de um código de ética."
+        "text": "A efetividade depende somente da existência de um código de ética."
       }
     ]
   },
   {
     "id": "q03",
-    "question": "Segundo a Lei nº 12.846/2013, sua finalidade central é disciplinar:",
+    "difficulty": "difícil",
+    "question": "Sobre a Lei nº 12.846/2013, assinale a alternativa correta: I. A responsabilidade da pessoa jurídica pode ser objetiva nos âmbitos administrativo e civil. II. A responsabilização da pessoa jurídica não exclui a responsabilidade individual das pessoas naturais envolvidas. III. A responsabilidade individual dos dirigentes também é objetiva.",
     "choices": [
       {
         "id": "a",
-        "text": "A responsabilidade penal geral das pessoas jurídicas."
+        "text": "Apenas I está correta."
       },
       {
         "id": "b",
-        "text": "A responsabilização administrativa e civil de pessoas jurídicas por atos contra a Administração Pública."
+        "text": "Apenas I e II estão corretas."
       },
       {
         "id": "c",
-        "text": "Somente a responsabilidade disciplinar dos agentes públicos."
+        "text": "Apenas II e III estão corretas."
       },
       {
         "id": "d",
-        "text": "Exclusivamente as regras das sociedades anônimas."
+        "text": "I, II e III estão corretas."
       },
       {
         "id": "e",
-        "text": "A responsabilidade trabalhista das empresas contratadas pelo poder público."
+        "text": "Apenas III está correta."
       }
     ]
   },
   {
     "id": "q04",
+    "difficulty": "fácil",
     "question": "Nos termos do art. 2º da Lei nº 12.846/2013, a responsabilidade da pessoa jurídica é:",
     "choices": [
       {
@@ -87,7 +91,7 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "b",
-        "text": "Subjetiva e dependente da prova de dolo."
+        "text": "Subjetiva e dependente de prova de dolo."
       },
       {
         "id": "c",
@@ -105,75 +109,78 @@ window.COMPLIANCE_QUESTIONS = [
   },
   {
     "id": "q05",
-    "question": "De acordo com o art. 3º da Lei nº 12.846/2013, a responsabilização da pessoa jurídica:",
+    "difficulty": "média",
+    "question": "Qual afirmação traduz corretamente a relação entre a responsabilidade da pessoa jurídica e a dos dirigentes na Lei nº 12.846/2013?",
     "choices": [
       {
         "id": "a",
-        "text": "Exclui a responsabilidade dos administradores envolvidos."
+        "text": "A responsabilização da pessoa jurídica elimina a possibilidade de responsabilização individual."
       },
       {
         "id": "b",
-        "text": "Depende necessariamente da condenação de uma pessoa natural."
+        "text": "A pessoa jurídica só pode ser responsabilizada depois da condenação de uma pessoa natural."
       },
       {
         "id": "c",
-        "text": "Não exclui a responsabilidade individual de dirigentes, administradores ou demais pessoas naturais envolvidas."
+        "text": "A responsabilização da pessoa jurídica não exclui a individual, que depende da culpabilidade da pessoa natural."
       },
       {
         "id": "d",
-        "text": "Transforma automaticamente a responsabilidade individual em objetiva."
+        "text": "A responsabilidade individual é sempre objetiva."
       },
       {
         "id": "e",
-        "text": "Impede responsabilização civil dos envolvidos."
+        "text": "A responsabilização administrativa impede eventual responsabilização civil."
       }
     ]
   },
   {
     "id": "q06",
-    "question": "Qual conduta está prevista no art. 5º da Lei nº 12.846/2013 como ato lesivo à Administração Pública?",
+    "difficulty": "difícil",
+    "question": "Entre as condutas abaixo, qual corresponde diretamente a ato lesivo previsto na Lei nº 12.846/2013?",
     "choices": [
       {
         "id": "a",
-        "text": "Prometer, oferecer ou dar vantagem indevida a agente público ou pessoa a ele relacionada."
+        "text": "Prometer, oferecer ou dar vantagem indevida a agente público ou a terceira pessoa a ele relacionada."
       },
       {
         "id": "b",
-        "text": "Obter lucro elevado em contrato privado."
+        "text": "Obter lucro elevado em operação comercial privada."
       },
       {
         "id": "c",
-        "text": "Demitir empregado sem justa causa."
+        "text": "Celebrar contrato privado sem cláusula de arbitragem."
       },
       {
         "id": "d",
-        "text": "Realizar operação comercial de alto risco."
+        "text": "Recusar proposta comercial apresentada por empresa estatal."
       },
       {
         "id": "e",
-        "text": "Recusar proposta comercial de empresa estatal."
+        "text": "Adotar estratégia empresarial de alto risco, sem violação normativa."
       }
     ]
   },
   {
     "id": "q07",
-    "question": "A utilização de pessoa física ou jurídica interposta para ocultar ou dissimular interesses ou beneficiários de atos ilícitos é tratada pela Lei nº 12.846/2013 como:",
+    "difficulty": "fácil",
+    "question": "A utilização de pessoa interposta para ocultar ou dissimular interesses ou beneficiários de atos ilícitos é, na Lei Anticorrupção:",
     "choices": [
       {
         "id": "a",
-        "text": "Prática sem relevância para a Lei Anticorrupção."
+        "text": "Irrelevante para fins de responsabilização."
       },
       {
         "id": "b",
-        "text": "Ato lesivo, quando presentes os requisitos legais."
+        "text": "Conduta que pode caracterizar ato lesivo."
       },
       {
         "id": "c",
-        "text": "Somente infração contábil interna."
+        "text": "Apenas uma infração contábil interna."
       },
       {
         "id": "d",
-        "text": "Conduta permitida quando existe contrato escrito."
+        "text": "Permitida quando formalizada por contrato."
       },
       {
         "id": "e",
@@ -183,23 +190,24 @@ window.COMPLIANCE_QUESTIONS = [
   },
   {
     "id": "q08",
-    "question": "O acordo de leniência previsto no art. 16 da Lei nº 12.846/2013 pressupõe:",
+    "difficulty": "média",
+    "question": "O que melhor caracteriza a colaboração exigida para um acordo de leniência na Lei nº 12.846/2013?",
     "choices": [
       {
         "id": "a",
-        "text": "Colaboração efetiva da pessoa jurídica com a investigação e o processo administrativo."
+        "text": "Colaboração efetiva com a investigação e o processo administrativo, gerando utilidade concreta para a apuração."
       },
       {
         "id": "b",
-        "text": "Apenas o pagamento antecipado de multa."
+        "text": "Pagamento antecipado da multa, sem necessidade de cooperação."
       },
       {
         "id": "c",
-        "text": "Inexistência de qualquer participação da empresa no ilícito."
+        "text": "Confissão genérica, sem fornecimento de informações."
       },
       {
         "id": "d",
-        "text": "Extinção automática de toda responsabilidade civil."
+        "text": "Negativa de participação da empresa no ilícito."
       },
       {
         "id": "e",
@@ -209,33 +217,35 @@ window.COMPLIANCE_QUESTIONS = [
   },
   {
     "id": "q09",
-    "question": "Entre os resultados esperados da colaboração em acordo de leniência está:",
+    "difficulty": "difícil",
+    "question": "No acordo de leniência da Lei nº 12.846/2013, qual resultado é compatível com a ideia de colaboração efetiva?",
     "choices": [
       {
         "id": "a",
-        "text": "Impedir acesso das autoridades aos documentos internos."
+        "text": "Restringir o acesso da autoridade aos documentos internos."
       },
       {
         "id": "b",
-        "text": "Obter informações e documentos que auxiliem de forma célere a comprovação do ilícito."
+        "text": "Fornecer informações e documentos que permitam avançar de forma útil e célere na comprovação do ilícito e, quando cabível, identificar envolvidos."
       },
       {
         "id": "c",
-        "text": "Garantir sigilo absoluto sobre todos os envolvidos."
+        "text": "Substituir o processo administrativo por arbitragem obrigatória."
       },
       {
         "id": "d",
-        "text": "Eliminar a necessidade de cooperação da empresa."
+        "text": "Garantir imunidade automática a todas as pessoas naturais."
       },
       {
         "id": "e",
-        "text": "Substituir todo processo administrativo por arbitragem."
+        "text": "Eliminar toda responsabilidade civil da pessoa jurídica."
       }
     ]
   },
   {
     "id": "q10",
-    "question": "Segundo o Decreto nº 11.129/2022, um programa de integridade busca:",
+    "difficulty": "fácil",
+    "question": "Segundo o Decreto nº 11.129/2022, o programa de integridade busca:",
     "choices": [
       {
         "id": "a",
@@ -243,7 +253,7 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "b",
-        "text": "Prevenir, detectar e sanar desvios, fraudes, irregularidades e atos ilícitos, além de fomentar cultura de integridade."
+        "text": "Prevenir, detectar e sanar desvios e ilícitos, além de fomentar cultura de integridade."
       },
       {
         "id": "c",
@@ -251,151 +261,157 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "d",
-        "text": "Atuar exclusivamente em casos de corrupção já comprovados."
+        "text": "Atuar somente depois da comprovação de corrupção."
       },
       {
         "id": "e",
-        "text": "Impedir qualquer decisão de risco pela administração."
+        "text": "Impedir qualquer decisão empresarial de risco."
       }
     ]
   },
   {
     "id": "q11",
-    "question": "Qual elemento é relevante para a avaliação de um programa de integridade?",
+    "difficulty": "média",
+    "question": "Qual elemento indica maior maturidade de um programa de integridade?",
     "choices": [
       {
         "id": "a",
-        "text": "Comprometimento da alta direção com o programa."
+        "text": "Comprometimento demonstrável da alta direção, acompanhado de recursos, autonomia e monitoramento."
       },
       {
         "id": "b",
-        "text": "Quantidade de propaganda institucional produzida."
+        "text": "Grande quantidade de documentos sem evidência de aplicação."
       },
       {
         "id": "c",
-        "text": "Número de empregados, isoladamente."
+        "text": "Treinamento realizado apenas na admissão do empregado."
       },
       {
         "id": "d",
-        "text": "Existência de apenas uma política genérica."
+        "text": "Canal de denúncias sem fluxo de apuração definido."
       },
       {
         "id": "e",
-        "text": "Valor do capital social da empresa, isoladamente."
+        "text": "Política de integridade conhecida apenas pelo departamento jurídico."
       }
     ]
   },
   {
     "id": "q12",
-    "question": "A avaliação periódica de riscos em um programa de integridade serve principalmente para:",
+    "difficulty": "difícil",
+    "question": "Em um programa de integridade, a avaliação periódica de riscos deve servir principalmente para:",
     "choices": [
       {
         "id": "a",
-        "text": "Identificar e priorizar exposições relevantes para orientar controles e medidas preventivas."
+        "text": "Identificar exposições relevantes, priorizar recursos e ajustar controles conforme mudanças no perfil de risco."
       },
       {
         "id": "b",
-        "text": "Eliminar definitivamente todo risco empresarial."
+        "text": "Demonstrar que a organização não possui riscos relevantes."
       },
       {
         "id": "c",
-        "text": "Substituir investigações internas."
+        "text": "Eliminar a necessidade de monitoramento posterior."
       },
       {
         "id": "d",
-        "text": "Reduzir a necessidade de monitoramento."
+        "text": "Substituir a investigação interna e o canal de denúncias."
       },
       {
         "id": "e",
-        "text": "Evitar qualquer relacionamento com terceiros."
+        "text": "Aplicar o mesmo controle a todas as áreas, independentemente do risco."
       }
     ]
   },
   {
     "id": "q13",
-    "question": "A due diligence de terceiros tem como função principal:",
+    "difficulty": "fácil",
+    "question": "Qual é a função principal da due diligence de terceiros?",
     "choices": [
       {
         "id": "a",
-        "text": "Conhecer e avaliar riscos relacionados a fornecedores, consultores, intermediários e parceiros."
+        "text": "Conhecer e avaliar riscos associados a fornecedores, consultores, intermediários e parceiros."
       },
       {
         "id": "b",
-        "text": "Garantir que o terceiro jamais cometerá irregularidade."
+        "text": "Garantir que o terceiro jamais cometerá irregularidades."
       },
       {
         "id": "c",
-        "text": "Transferir toda responsabilidade à empresa contratada."
+        "text": "Transferir integralmente a responsabilidade ao terceiro."
       },
       {
         "id": "d",
-        "text": "Substituir o monitoramento posterior da relação."
+        "text": "Dispensar o monitoramento após a contratação."
       },
       {
         "id": "e",
-        "text": "Dispensar cláusulas contratuais de integridade."
+        "text": "Eliminar a necessidade de cláusulas contratuais de integridade."
       }
     ]
   },
   {
     "id": "q14",
-    "question": "Na governança corporativa, qual é uma função central do conselho de administração?",
+    "difficulty": "média",
+    "question": "Na arquitetura de governança corporativa, qual distinção é mais adequada entre conselho de administração e diretoria?",
     "choices": [
       {
         "id": "a",
-        "text": "Executar pessoalmente todas as atividades operacionais."
+        "text": "O conselho executa as operações diárias e a diretoria apenas fiscaliza."
       },
       {
         "id": "b",
-        "text": "Orientar estrategicamente a companhia e supervisionar a atuação da gestão."
+        "text": "O conselho orienta e supervisiona estrategicamente; a diretoria conduz a gestão executiva."
       },
       {
         "id": "c",
-        "text": "Substituir o conselho fiscal em todas as suas funções."
+        "text": "Ambos exercem exatamente as mesmas funções."
       },
       {
         "id": "d",
-        "text": "Atuar somente quando a companhia apresenta prejuízo."
+        "text": "A diretoria substitui o conselho fiscal."
       },
       {
         "id": "e",
-        "text": "Realizar a escrituração contábil cotidiana."
+        "text": "O conselho só atua em situações de prejuízo."
       }
     ]
   },
   {
     "id": "q15",
-    "question": "O art. 153 da Lei nº 6.404/1976 estabelece o chamado:",
+    "difficulty": "difícil",
+    "question": "O dever de diligência do art. 153 da Lei nº 6.404/1976 exige do administrador comportamento compatível com:",
     "choices": [
       {
         "id": "a",
-        "text": "Dever de diligência do administrador."
+        "text": "O cuidado e a diligência que uma pessoa ativa e proba costuma empregar na administração de seus próprios negócios."
       },
       {
         "id": "b",
-        "text": "Dever de sigilo bancário."
+        "text": "A obediência absoluta às ordens do acionista controlador, ainda que contrárias ao interesse da companhia."
       },
       {
         "id": "c",
-        "text": "Dever de indenizar automaticamente todo prejuízo."
+        "text": "A garantia de lucro em todas as decisões empresariais."
       },
       {
         "id": "d",
-        "text": "Dever de distribuir dividendos."
+        "text": "A eliminação de qualquer risco inerente à atividade econômica."
       },
       {
         "id": "e",
-        "text": "Dever de submissão absoluta ao acionista controlador."
+        "text": "A atuação exclusiva conforme interesses pessoais do administrador."
       }
     ]
   },
   {
     "id": "q16",
+    "difficulty": "fácil",
     "question": "Segundo o art. 154 da Lei nº 6.404/1976, o administrador deve exercer suas atribuições:",
     "choices": [
       {
         "id": "a",
-        "text": "Exclusivamente conforme o interesse pessoal do acionista que o elegeu."
+        "text": "Conforme o interesse pessoal de quem o elegeu."
       },
       {
         "id": "b",
@@ -403,73 +419,76 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "c",
-        "text": "Com liberdade absoluta para usar bens da companhia em benefício próprio."
+        "text": "Com liberdade para usar bens da companhia em benefício próprio."
       },
       {
         "id": "d",
-        "text": "Somente conforme instruções informais da diretoria."
+        "text": "Sem considerar a função social da empresa."
       },
       {
         "id": "e",
-        "text": "Sem considerar a função social da empresa."
+        "text": "Somente mediante autorização prévia do conselho fiscal."
       }
     ]
   },
   {
     "id": "q17",
-    "question": "Qual dever dos administradores é disciplinado pelo art. 155 da Lei nº 6.404/1976?",
+    "difficulty": "média",
+    "question": "O dever de lealdade do art. 155 da Lei nº 6.404/1976 busca impedir, entre outras situações, que o administrador:",
     "choices": [
       {
         "id": "a",
-        "text": "Dever de lealdade."
+        "text": "Utilize oportunidades ou informações da companhia em benefício próprio ou de terceiros, em prejuízo da sociedade."
       },
       {
         "id": "b",
-        "text": "Dever de pagamento de tributos pessoais."
+        "text": "Participe de reuniões do conselho de administração."
       },
       {
         "id": "c",
-        "text": "Dever de contratação de auditoria em toda sociedade."
+        "text": "Examine demonstrações financeiras."
       },
       {
         "id": "d",
-        "text": "Dever de eliminar qualquer risco empresarial."
+        "text": "Adote decisões empresariais sujeitas a risco."
       },
       {
         "id": "e",
-        "text": "Dever de garantir valorização das ações."
+        "text": "Delegue tarefas operacionais permitidas."
       }
     ]
   },
   {
     "id": "q18",
-    "question": "O art. 156 da Lei nº 6.404/1976 trata especificamente de:",
+    "difficulty": "difícil",
+    "question": "Sobre conflito de interesses do administrador no art. 156 da Lei nº 6.404/1976, assinale a alternativa mais adequada:",
     "choices": [
       {
         "id": "a",
-        "text": "Conflito de interesses do administrador."
+        "text": "O administrador deve declarar seu impedimento e abster-se de intervir em operação social na qual tenha interesse conflitante com o da companhia."
       },
       {
         "id": "b",
-        "text": "Responsabilidade objetiva por corrupção."
+        "text": "O conflito é irrelevante se o administrador acreditar que sua decisão será lucrativa."
       },
       {
         "id": "c",
-        "text": "Prevenção à lavagem de dinheiro."
+        "text": "O administrador pode votar normalmente, desde que informe o conflito depois da decisão."
       },
       {
         "id": "d",
-        "text": "Proteção de dados pessoais."
+        "text": "A regra se aplica apenas ao conselho fiscal."
       },
       {
         "id": "e",
-        "text": "Regras de licitação pública."
+        "text": "A existência de conflito transforma automaticamente toda decisão em crime."
       }
     ]
   },
   {
     "id": "q19",
-    "question": "O dever de informar dos administradores de companhia aberta é disciplinado especialmente pelo art. 157 da:",
+    "difficulty": "fácil",
+    "question": "O dever de informar dos administradores de companhia aberta é disciplinado especialmente pelo art. 157 de qual lei?",
     "choices": [
       {
         "id": "a",
@@ -495,7 +514,8 @@ window.COMPLIANCE_QUESTIONS = [
   },
   {
     "id": "q20",
-    "question": "Qual é uma função típica do conselho fiscal prevista na Lei nº 6.404/1976?",
+    "difficulty": "média",
+    "question": "Qual alternativa descreve corretamente uma função típica do conselho fiscal na Lei nº 6.404/1976?",
     "choices": [
       {
         "id": "a",
@@ -503,51 +523,53 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "b",
-        "text": "Executar diretamente a estratégia comercial."
+        "text": "Conduzir a gestão operacional diária da companhia."
       },
       {
         "id": "c",
-        "text": "Substituir permanentemente a diretoria."
+        "text": "Definir sozinho a estratégia empresarial."
       },
       {
         "id": "d",
-        "text": "Administrar diretamente o programa de compliance."
+        "text": "Substituir permanentemente a diretoria."
       },
       {
         "id": "e",
-        "text": "Realizar todas as auditorias independentes da companhia."
+        "text": "Executar todas as auditorias independentes da companhia."
       }
     ]
   },
   {
     "id": "q21",
-    "question": "A Lei nº 9.613/1998 está diretamente relacionada a:",
+    "difficulty": "difícil",
+    "question": "No sistema brasileiro de prevenção à lavagem de dinheiro, qual relação entre prevenção e repressão está melhor expressa na Lei nº 9.613/1998?",
     "choices": [
       {
         "id": "a",
-        "text": "Prevenção e repressão à lavagem ou ocultação de bens, direitos e valores."
+        "text": "A lei combina tipificação e repressão à lavagem com deveres preventivos aplicáveis a setores e pessoas sujeitos ao regime legal."
       },
       {
         "id": "b",
-        "text": "Regulação exclusiva das sociedades anônimas."
+        "text": "A lei trata apenas de sanções penais e não prevê obrigações preventivas."
       },
       {
         "id": "c",
-        "text": "Proteção de dados pessoais."
+        "text": "A lei disciplina exclusivamente instituições financeiras públicas."
       },
       {
         "id": "d",
-        "text": "Responsabilidade objetiva por atos contra a Administração Pública."
+        "text": "A lei se limita à identificação de clientes e não trata de operações suspeitas."
       },
       {
         "id": "e",
-        "text": "Direitos autorais e propriedade intelectual."
+        "text": "A lei substitui a atuação de órgãos de inteligência financeira pelo Poder Judiciário."
       }
     ]
   },
   {
     "id": "q22",
-    "question": "Entre os deveres preventivos previstos na Lei nº 9.613/1998 para pessoas sujeitas ao regime legal está:",
+    "difficulty": "fácil",
+    "question": "Entre os deveres preventivos associados à Lei nº 9.613/1998 está:",
     "choices": [
       {
         "id": "a",
@@ -555,29 +577,30 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "b",
-        "text": "Divulgar publicamente toda operação financeira de seus clientes."
+        "text": "Divulgar publicamente todas as operações dos clientes."
       },
       {
         "id": "c",
-        "text": "Comunicar qualquer operação diretamente à imprensa."
+        "text": "Eliminar registros logo após cada transação."
       },
       {
         "id": "d",
-        "text": "Dispensar controles internos quando o cliente for antigo."
+        "text": "Dispensar controles quando o cliente for antigo."
       },
       {
         "id": "e",
-        "text": "Eliminar registros depois de cada transação."
+        "text": "Comunicar operações suspeitas diretamente à imprensa."
       }
     ]
   },
   {
     "id": "q23",
-    "question": "No sistema brasileiro de prevenção à lavagem de dinheiro, o COAF exerce, entre outras, função de:",
+    "difficulty": "média",
+    "question": "Qual alternativa descreve melhor a função do COAF no sistema de prevenção à lavagem de dinheiro?",
     "choices": [
       {
         "id": "a",
-        "text": "Receber, examinar e identificar ocorrências suspeitas comunicadas pelos setores obrigados, dentro de suas competências."
+        "text": "Receber e analisar comunicações, produzir inteligência financeira e atuar dentro de suas competências legais."
       },
       {
         "id": "b",
@@ -585,29 +608,57 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "c",
-        "text": "Substituir o Poder Judiciário nas ações penais."
+        "text": "Substituir o Ministério Público e o Poder Judiciário."
       },
       {
         "id": "d",
-        "text": "Administrar todas as instituições financeiras do país."
+        "text": "Autorizar previamente toda movimentação bancária relevante."
       },
       {
         "id": "e",
-        "text": "Autorizar previamente toda transferência bancária."
+        "text": "Administrar diretamente as instituições financeiras."
       }
     ]
   },
   {
     "id": "q24",
-    "question": "Nos termos da LGPD, quem toma as decisões referentes ao tratamento de dados pessoais é denominado:",
+    "difficulty": "difícil",
+    "question": "Na LGPD, qual associação entre agentes e funções está correta?",
     "choices": [
       {
         "id": "a",
-        "text": "Controlador."
+        "text": "Controlador: decide sobre o tratamento; operador: trata em nome do controlador; encarregado: atua como canal de comunicação e exerce atribuições previstas na lei."
       },
       {
         "id": "b",
+        "text": "Controlador: executa ordens do operador; operador: define sozinho as finalidades; encarregado: substitui a ANPD."
+      },
+      {
+        "id": "c",
+        "text": "Controlador e operador possuem necessariamente a mesma função; o encarregado é sempre o titular."
+      },
+      {
+        "id": "d",
+        "text": "Operador: decide todas as finalidades; controlador: apenas executa; encarregado: responde automaticamente por qualquer incidente."
+      },
+      {
+        "id": "e",
+        "text": "Encarregado: autoriza judicialmente o tratamento; operador: representa a ANPD; controlador: é sempre o titular."
+      }
+    ]
+  },
+  {
+    "id": "q25",
+    "difficulty": "fácil",
+    "question": "Na LGPD, quem realiza o tratamento de dados pessoais em nome do controlador?",
+    "choices": [
+      {
+        "id": "a",
         "text": "Operador."
+      },
+      {
+        "id": "b",
+        "text": "Titular."
       },
       {
         "id": "c",
@@ -615,7 +666,7 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "d",
-        "text": "Titular."
+        "text": "Conselho fiscal."
       },
       {
         "id": "e",
@@ -624,90 +675,67 @@ window.COMPLIANCE_QUESTIONS = [
     ]
   },
   {
-    "id": "q25",
-    "question": "Na LGPD, o operador é aquele que:",
-    "choices": [
-      {
-        "id": "a",
-        "text": "Realiza o tratamento de dados pessoais em nome do controlador."
-      },
-      {
-        "id": "b",
-        "text": "Define sozinho todas as finalidades do tratamento."
-      },
-      {
-        "id": "c",
-        "text": "Representa necessariamente a ANPD dentro da empresa."
-      },
-      {
-        "id": "d",
-        "text": "É sempre o titular dos dados."
-      },
-      {
-        "id": "e",
-        "text": "Substitui o controlador em todas as responsabilidades."
-      }
-    ]
-  },
-  {
     "id": "q26",
-    "question": "Segundo o art. 41 da LGPD, o encarregado pelo tratamento de dados pessoais possui função relacionada a:",
+    "difficulty": "média",
+    "question": "Qual alternativa melhor descreve a posição do encarregado pelo tratamento de dados pessoais na LGPD?",
     "choices": [
       {
         "id": "a",
-        "text": "Atuar como canal de comunicação entre controlador, titulares e autoridade competente, além de outras atribuições aplicáveis."
+        "text": "Atua como canal de comunicação entre controlador, titulares e autoridade competente, além de desempenhar outras atribuições aplicáveis."
       },
       {
         "id": "b",
-        "text": "Assumir automaticamente toda responsabilidade por incidentes."
+        "text": "Assume automaticamente toda responsabilidade jurídica do controlador."
       },
       {
         "id": "c",
-        "text": "Substituir o controlador em todas as decisões."
+        "text": "Substitui o controlador nas decisões sobre finalidade e meios do tratamento."
       },
       {
         "id": "d",
-        "text": "Atuar exclusivamente como técnico de segurança da informação."
+        "text": "Exerce exclusivamente função técnica de segurança da informação."
       },
       {
         "id": "e",
-        "text": "Autorizar judicialmente o tratamento de dados."
+        "text": "Tem competência para autorizar judicialmente operações de tratamento."
       }
     ]
   },
   {
     "id": "q27",
-    "question": "Qual característica fortalece a efetividade de um canal de denúncias?",
+    "difficulty": "difícil",
+    "question": "Um canal de denúncias tende a ser mais efetivo quando reúne quais características?",
     "choices": [
       {
         "id": "a",
-        "text": "Possibilidade de recebimento seguro, tratamento adequado, proteção contra retaliação e apuração consistente."
+        "text": "Acesso seguro, possibilidade de confidencialidade, proteção contra retaliação, triagem adequada, investigação consistente e retorno compatível com o processo."
       },
       {
         "id": "b",
-        "text": "Obrigação de identificação pública de todo denunciante."
+        "text": "Identificação pública obrigatória do denunciante e acesso irrestrito da área denunciada."
       },
       {
         "id": "c",
-        "text": "Envio automático de toda denúncia às redes sociais."
+        "text": "Recebimento de denúncias sem qualquer protocolo de análise."
       },
       {
         "id": "d",
-        "text": "Arquivamento sem análise de denúncias anônimas."
+        "text": "Arquivamento automático de denúncias anônimas."
       },
       {
         "id": "e",
-        "text": "Subordinação exclusiva à área denunciada."
+        "text": "Divulgação pública imediata do conteúdo recebido."
       }
     ]
   },
   {
     "id": "q28",
-    "question": "Em uma investigação interna de compliance, qual providência é especialmente importante logo no início?",
+    "difficulty": "fácil",
+    "question": "Em uma investigação interna de compliance, qual providência é especialmente importante no início?",
     "choices": [
       {
         "id": "a",
-        "text": "Preservar documentos, mensagens, logs e demais evidências potencialmente relevantes."
+        "text": "Preservar documentos, mensagens, logs e demais evidências relevantes."
       },
       {
         "id": "b",
@@ -715,7 +743,7 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "c",
-        "text": "Divulgar imediatamente os nomes de todos os investigados."
+        "text": "Divulgar os nomes dos investigados antes da apuração."
       },
       {
         "id": "d",
@@ -723,12 +751,13 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "e",
-        "text": "Suspender toda atividade empresarial sem análise."
+        "text": "Suspender toda atividade empresarial."
       }
     ]
   },
   {
     "id": "q29",
+    "difficulty": "média",
     "question": "A Resolução CVM nº 44/2021 disciplina, entre outros temas:",
     "choices": [
       {
@@ -741,41 +770,42 @@ window.COMPLIANCE_QUESTIONS = [
       },
       {
         "id": "c",
-        "text": "Prevenção à lavagem de dinheiro em todos os setores econômicos."
-      },
-      {
-        "id": "d",
         "text": "Proteção de dados pessoais no setor público."
       },
       {
+        "id": "d",
+        "text": "Responsabilidade objetiva por atos de corrupção."
+      },
+      {
         "id": "e",
-        "text": "Responsabilidade objetiva das empresas por corrupção."
+        "text": "Regras trabalhistas de administradores de companhias abertas."
       }
     ]
   },
   {
     "id": "q30",
-    "question": "Segundo a Resolução CVM nº 44/2021, o uso indevido de informação privilegiada envolve, em essência:",
+    "difficulty": "difícil",
+    "question": "Qual alternativa melhor expressa a lógica da vedação ao uso indevido de informação privilegiada no mercado de capitais?",
     "choices": [
       {
         "id": "a",
-        "text": "Utilizar informação relevante ainda não divulgada para obter vantagem mediante negociação de valores mobiliários."
+        "text": "Impedir que informação relevante ainda não divulgada seja utilizada em negociação de valores mobiliários para obtenção de vantagem."
       },
       {
         "id": "b",
-        "text": "Comprar ações depois de todas as informações relevantes estarem publicamente divulgadas."
+        "text": "Proibir qualquer negociação de valores mobiliários por administradores, mesmo depois da divulgação pública da informação."
       },
       {
         "id": "c",
-        "text": "Participar de assembleia de acionistas."
+        "text": "Impedir acionistas de consultar demonstrações financeiras publicadas."
       },
       {
         "id": "d",
-        "text": "Consultar demonstrações financeiras publicadas."
+        "text": "Proibir a participação de administradores em assembleias."
       },
       {
         "id": "e",
-        "text": "Votar em reunião do conselho de administração."
+        "text": "Tornar ilícita toda negociação que resulte em lucro."
       }
     ]
   }

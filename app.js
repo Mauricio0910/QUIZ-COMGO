@@ -8,9 +8,13 @@
   const CORRECT_BASE_POINTS=1000;
   const MAX_SPEED_BONUS=500;
   const MAX_POINTS_PER_QUESTION=CORRECT_BASE_POINTS+MAX_SPEED_BONUS;
-  let user=null, teacher=false, key=null, config=null, timer=null, answersRef=null;
+  let user=null, teacher=false, key=null, config=null, timer=null, answersRef=null, serverTimeOffset=0;
   firebase.initializeApp(window.COMPLIANCE_FIREBASE_CONFIG);
   const auth=firebase.auth(), db=firebase.database(), root=()=>db.ref(ROOT);
+  db.ref(".info/serverTimeOffset").on("value",s=>{
+    serverTimeOffset=Number(s.val()||0);
+  });
+  const serverNow=()=>Date.now()+serverTimeOffset;
   const qById=id=>QUESTIONS.find(q=>q.id===id);
   const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
   function show(id){$(id)?.classList.remove("hidden")} function hide(id){$(id)?.classList.add("hidden")}
@@ -61,7 +65,7 @@
       const choices=shuffle(q.choices,user.uid+q.id);
 
       const renderChoices=()=>{
-        const expired=Date.now()>=Number(c.roundEndsAt||0);
+        const expired=serverNow()>=Number(c.roundEndsAt||0);
         $("studentState").textContent=ans?"RESPOSTA ENVIADA":(expired?"TEMPO ESGOTADO":"RESPONDA");
 
         $("choices").innerHTML=choices.map(o=>`
@@ -79,7 +83,7 @@
       };
 
       const tick=()=>{
-        const remaining=Math.max(0,Number(c.roundEndsAt||0)-Date.now());
+        const remaining=Math.max(0,Number(c.roundEndsAt||0)-serverNow());
         $("timerBar").style.width=(100*remaining/QUESTION_MS)+"%";
         renderChoices();
 
@@ -106,7 +110,7 @@
         return;
       }
 
-      if(Date.now()>=Number(c.roundEndsAt||0)){
+      if(serverNow()>=Number(c.roundEndsAt||0)){
         alert("Tempo esgotado. O limite é de 20 segundos.");
         renderStudent();
         return;
@@ -146,7 +150,7 @@
 
     // Lê o timestamp já resolvido pelo servidor.
     const roundSnap=await root().child(`rounds/${q.id}`).once("value");
-    const serverStart=Number(roundSnap.val()?.startedAt||Date.now());
+    const serverStart=Number(roundSnap.val()?.startedAt||serverNow());
     const end=serverStart+QUESTION_MS;
 
     await root().child(`rounds/${q.id}`).update({endsAt:end});
@@ -242,7 +246,7 @@
   }
   function renderTeacher(){
     const c=config||{};$("teacherStatus").textContent=c.status||"sem sala";const i=Number.isInteger(c.questionIndex)?c.questionIndex:-1;$("teacherCounter").textContent=i>=0?`${i+1}/${QUESTIONS.length}`:"—";const q=qById(c.questionId);$("teacherQuestion").textContent=q?q.question:"Aguardando início.";const k=key?.answers?.[c.questionId];
-    $("teacherOptions").innerHTML=q?q.choices.map(o=>`<div class="teacher-option ${c.status==="revealed"&&k?.correctId===o.id?'correct':''}"><strong>${o.id.toUpperCase()}.</strong> ${esc(o.text)}</div>`).join(""):"";clearInterval(timer);const tick=()=>{$("teacherTimer").textContent=c.status==="question"?(Math.max(0,Number(c.roundEndsAt)-Date.now())/1000).toFixed(1)+"s":(c.status==="revealed"?"revelada":"—")};tick();timer=setInterval(tick,100);$("startBtn").disabled=c.status!=="lobby";$("revealBtn").disabled=c.status!=="question";$("nextBtn").disabled=c.status!=="revealed"
+    $("teacherOptions").innerHTML=q?q.choices.map(o=>`<div class="teacher-option ${c.status==="revealed"&&k?.correctId===o.id?'correct':''}"><strong>${o.id.toUpperCase()}.</strong> ${esc(o.text)}</div>`).join(""):"";clearInterval(timer);const tick=()=>{$("teacherTimer").textContent=c.status==="question"?(Math.max(0,Number(c.roundEndsAt)-serverNow())/1000).toFixed(1)+"s":(c.status==="revealed"?"revelada":"—")};tick();timer=setInterval(tick,100);$("startBtn").disabled=c.status!=="lobby";$("revealBtn").disabled=c.status!=="question";$("nextBtn").disabled=c.status!=="revealed"
   }
   function renderRanking(scores,target){
     const arr=Object.values(scores).sort((a,b)=>
@@ -285,5 +289,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=1800";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=1900";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

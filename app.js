@@ -80,10 +80,34 @@
   }
   async function start(){if(!key){alert("Carregue o gabarito privado.");return}if(!config?.gameId){await newGame();return}openQuestion(0)}
   async function openQuestion(i){
-    if(i>=QUESTIONS.length){finish();return}const q=QUESTIONS[i],now=Date.now(),end=now+QUESTION_MS;
-    await root().child(`rounds/${q.id}`).set({startedAt:now,endsAt:end,index:i});
-    await root().child("config").update({status:"question",questionIndex:i,questionId:q.id,roundStartedAt:now,roundEndsAt:end,updatedAt:firebase.database.ServerValue.TIMESTAMP});
-    if(answersRef)answersRef.off();answersRef=root().child("answers/"+q.id);answersRef.on("value",()=>recompute())
+    if(i>=QUESTIONS.length){finish();return}
+    const q=QUESTIONS[i];
+
+    // Cria a rodada usando o relógio do próprio Firebase.
+    await root().child(`rounds/${q.id}`).set({
+      startedAt:firebase.database.ServerValue.TIMESTAMP,
+      index:i
+    });
+
+    // Lê o timestamp já resolvido pelo servidor.
+    const roundSnap=await root().child(`rounds/${q.id}`).once("value");
+    const serverStart=Number(roundSnap.val()?.startedAt||Date.now());
+    const end=serverStart+QUESTION_MS;
+
+    await root().child(`rounds/${q.id}`).update({endsAt:end});
+
+    await root().child("config").update({
+      status:"question",
+      questionIndex:i,
+      questionId:q.id,
+      roundStartedAt:serverStart,
+      roundEndsAt:end,
+      updatedAt:firebase.database.ServerValue.TIMESTAMP
+    });
+
+    if(answersRef)answersRef.off();
+    answersRef=root().child("answers/"+q.id);
+    answersRef.on("value",()=>recompute());
   }
   async function reveal(){if(!key||!config?.questionId)return;const k=key.answers[config.questionId];await root().child(`rounds/${config.questionId}`).update({correctId:k.correctId,explanation:k.explanation,revealedAt:firebase.database.ServerValue.TIMESTAMP});await recompute();await root().child("config").update({status:"revealed",updatedAt:firebase.database.ServerValue.TIMESTAMP})}
   function next(){openQuestion((config?.questionIndex??-1)+1)}
@@ -102,78 +126,61 @@
     const rounds=rs.val()||{};
     const scores={};
 
-    // Estrutura inicial do placar.
     for(const [uid,p] of Object.entries(players)){
-      scores[uid]={
-        nickname:p.nickname,
-        points:0,
-        correct:0,
-        answered:0,
-        totalTime:0,
-        correctTime:0,
-        speedBonus:0,
-        avgCorrectTime:0
-      };
-    }
+      let points=0;
+      let correct=0;
+      let answered=0;
+      let totalTime=0;
+      let correctTime=0;
+      let speedBonusTotal=0;
 
-    // Calcula questão por questão.
-    for(const q of QUESTIONS){
-      const k=key.answers[q.id];
-      const r=rounds[q.id];
-      if(!k||!r)continue;
-
-      const correctResponses=[];
-
-      // Primeiro registra respostas e tempos.
-      for(const [uid,p] of Object.entries(players)){
+      for(const q of QUESTIONS){
         const a=answers[q.id]?.[uid];
-        if(!a)continue;
+        const k=key.answers[q.id];
+        const r=rounds[q.id];
 
-        const elapsed=Math.max(0,Number(a.at)-Number(r.startedAt));
-        scores[uid].answered++;
-        scores[uid].totalTime+=elapsed;
+        if(!a||!k||!r)continue;
+
+        answered++;
+
+        const startedAt=Number(r.startedAt||0);
+        const answeredAt=Number(a.at||0);
+
+        // Tempo individual da resposta, limitado ao tempo oficial da questão.
+        const elapsed=Math.max(0,answeredAt-startedAt);
+        const cappedElapsed=Math.min(elapsed,QUESTION_MS);
+
+        totalTime+=elapsed;
 
         if(a.choice===k.correctId){
-          scores[uid].correct++;
-          scores[uid].correctTime+=elapsed;
-          correctResponses.push({uid,elapsed});
+          correct++;
+          correctTime+=elapsed;
+
+          // Pontuação estilo Kahoot adaptada:
+          // 0 s        = 1.500 pontos
+          // 5 s        = 1.375 pontos
+          // 10 s       = 1.250 pontos
+          // 15 s       = 1.125 pontos
+          // 20 s ou +  = 1.000 pontos
+          const remainingRatio=1-(cappedElapsed/QUESTION_MS);
+          const speedBonus=Math.round(MAX_SPEED_BONUS*remainingRatio);
+          const questionPoints=CORRECT_BASE_POINTS+speedBonus;
+
+          speedBonusTotal+=speedBonus;
+          points+=questionPoints;
         }
       }
 
-      // Nenhum acerto: ninguém pontua nesta questão.
-      if(!correctResponses.length)continue;
-
-      // Ordena apenas quem acertou: o mais rápido vem primeiro.
-      correctResponses.sort((a,b)=>a.elapsed-b.elapsed);
-
-      const fastest=correctResponses[0].elapsed;
-      const slowest=correctResponses[correctResponses.length-1].elapsed;
-
-      for(let i=0;i<correctResponses.length;i++){
-        const {uid,elapsed}=correctResponses[i];
-
-        let speedBonus;
-
-        if(correctResponses.length===1 || slowest===fastest){
-          // Se só houve um acerto, ou todos acertaram no mesmo tempo,
-          // o acerto recebe a pontuação máxima.
-          speedBonus=500;
-        }else{
-          // Bônus relativo entre os alunos que acertaram:
-          // mais rápido = 500; mais lento = 0; demais = proporcional.
-          const ratio=(slowest-elapsed)/(slowest-fastest);
-          speedBonus=Math.round(500*ratio);
-        }
-
-        scores[uid].speedBonus+=speedBonus;
-        scores[uid].points+=1000+speedBonus;
-      }
-    }
-
-    // Métricas de desempate.
-    for(const uid of Object.keys(scores)){
-      const s=scores[uid];
-      s.avgCorrectTime=s.correct?Math.round(s.correctTime/s.correct):0;
+      scores[uid]={
+        nickname:p.nickname,
+        points,
+        correct,
+        answered,
+        totalTime,
+        correctTime,
+        speedBonus:speedBonusTotal,
+        avgCorrectTime:correct?Math.round(correctTime/correct):0
+      };
     }
 
     await root().child("scores").set(scores);
@@ -223,5 +230,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=1600";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=1700";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

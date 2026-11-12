@@ -5,6 +5,9 @@
   const ROOT=window.COMPLIANCE_DB_ROOT||"complianceQuiz";
   const QUESTIONS=window.COMPLIANCE_QUESTIONS||[];
   const QUESTION_MS=20000;
+  const CORRECT_BASE_POINTS=1000;
+  const MAX_SPEED_BONUS=500;
+  const MAX_POINTS_PER_QUESTION=CORRECT_BASE_POINTS+MAX_SPEED_BONUS;
   let user=null, teacher=false, key=null, config=null, timer=null, answersRef=null;
   firebase.initializeApp(window.COMPLIANCE_FIREBASE_CONFIG);
   const auth=firebase.auth(), db=firebase.database(), root=()=>db.ref(ROOT);
@@ -86,14 +89,102 @@
   function next(){openQuestion((config?.questionIndex??-1)+1)}
   async function finish(){await recompute();await root().child("config").update({status:"finished",updatedAt:firebase.database.ServerValue.TIMESTAMP})}
   async function recompute(){
-    if(!teacher||!key)return;const [ps,as,rs]=await Promise.all([root().child("players").once("value"),root().child("answers").once("value"),root().child("rounds").once("value")]);const players=ps.val()||{},answers=as.val()||{},rounds=rs.val()||{},scores={};
-    for(const [uid,p] of Object.entries(players)){let points=0,correct=0,totalTime=0,answered=0;for(const q of QUESTIONS){const a=answers[q.id]?.[uid],k=key.answers[q.id],r=rounds[q.id];if(!a||!k||!r)continue;answered++;const elapsed=Math.max(0,Number(a.at)-Number(r.startedAt));totalTime+=elapsed;if(a.choice===k.correctId){correct++;points+=1000+Math.max(0,Math.round(500*(1-Math.min(elapsed,QUESTION_MS)/QUESTION_MS)))}}scores[uid]={nickname:p.nickname,points,correct,answered,totalTime}}await root().child("scores").set(scores)
+    if(!teacher||!key)return;
+    const [ps,as,rs]=await Promise.all([
+      root().child("players").once("value"),
+      root().child("answers").once("value"),
+      root().child("rounds").once("value")
+    ]);
+    const players=ps.val()||{},answers=as.val()||{},rounds=rs.val()||{},scores={};
+
+    for(const [uid,p] of Object.entries(players)){
+      let points=0,correct=0,totalTime=0,answered=0,speedBonusTotal=0,correctTime=0;
+
+      for(const q of QUESTIONS){
+        const a=answers[q.id]?.[uid],k=key.answers[q.id],r=rounds[q.id];
+        if(!a||!k||!r)continue;
+
+        answered++;
+        const elapsed=Math.max(0,Number(a.at)-Number(r.startedAt));
+        totalTime+=elapsed;
+
+        if(a.choice===k.correctId){
+          correct++;
+          correctTime+=elapsed;
+
+          // 1.000 pontos pelo acerto + até 500 pela rapidez.
+          // Resposta instantânea = 1.500 pontos.
+          // Aos 10 s = 1.250 pontos.
+          // Aos 20 s ou mais = 1.000 pontos.
+          const speedBonus=Math.max(
+            0,
+            Math.round(MAX_SPEED_BONUS*(1-Math.min(elapsed,QUESTION_MS)/QUESTION_MS))
+          );
+
+          speedBonusTotal+=speedBonus;
+          points+=CORRECT_BASE_POINTS+speedBonus;
+        }
+      }
+
+      scores[uid]={
+        nickname:p.nickname,
+        points,
+        correct,
+        answered,
+        totalTime,
+        correctTime,
+        speedBonus:speedBonusTotal,
+        avgCorrectTime:correct?Math.round(correctTime/correct):0,
+        maxPossible:correct*MAX_POINTS_PER_QUESTION
+      };
+    }
+
+    await root().child("scores").set(scores);
   }
   function renderTeacher(){
     const c=config||{};$("teacherStatus").textContent=c.status||"sem sala";const i=Number.isInteger(c.questionIndex)?c.questionIndex:-1;$("teacherCounter").textContent=i>=0?`${i+1}/${QUESTIONS.length}`:"—";const q=qById(c.questionId);$("teacherQuestion").textContent=q?q.question:"Aguardando início.";const k=key?.answers?.[c.questionId];
     $("teacherOptions").innerHTML=q?q.choices.map(o=>`<div class="teacher-option ${c.status==="revealed"&&k?.correctId===o.id?'correct':''}"><strong>${o.id.toUpperCase()}.</strong> ${esc(o.text)}</div>`).join(""):"";clearInterval(timer);const tick=()=>{$("teacherTimer").textContent=c.status==="question"?(Math.max(0,Number(c.roundEndsAt)-Date.now())/1000).toFixed(1)+"s":(c.status==="revealed"?"revelada":"—")};tick();timer=setInterval(tick,100);$("startBtn").disabled=c.status!=="lobby";$("revealBtn").disabled=c.status!=="question";$("nextBtn").disabled=c.status!=="revealed"
   }
-  function renderRanking(scores,target){const arr=Object.values(scores).sort((a,b)=>(b.points||0)-(a.points||0)||(b.correct||0)-(a.correct||0)||(a.totalTime||0)-(b.totalTime||0));$(target).innerHTML=arr.length?arr.map((s,i)=>`<div class="rank-row"><span class="pos">${i+1}º</span><span>${esc(s.nickname||"Aluno")}</span><span class="pts">${s.points||0}</span></div>`).join(""):"<p class='small'>Sem pontuação ainda.</p>";if(!isTeacher&&user&&scores[user.uid])$("myScore").textContent=scores[user.uid].points||0}
-  async function exportCSV(){const s=(await root().child("scores").once("value")).val()||{},arr=Object.values(s).sort((a,b)=>(b.points||0)-(a.points||0)),rows=[["Posição","Apelido","Pontos","Acertos","Respondidas","Tempo total ms"]];arr.forEach((x,i)=>rows.push([i+1,x.nickname,x.points||0,x.correct||0,x.answered||0,x.totalTime||0]));const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(";")).join("\n"),blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="ranking_compliance_governanca.csv";a.click();URL.revokeObjectURL(a.href)}
+  function renderRanking(scores,target){
+    const arr=Object.values(scores).sort((a,b)=>
+      (b.points||0)-(a.points||0) ||
+      (b.correct||0)-(a.correct||0) ||
+      (a.avgCorrectTime||Number.MAX_SAFE_INTEGER)-(b.avgCorrectTime||Number.MAX_SAFE_INTEGER)
+    );
+
+    $(target).innerHTML=arr.length?arr.map((s,i)=>`
+      <div class="rank-row">
+        <span class="pos">${i+1}º</span>
+        <span>
+          <strong>${esc(s.nickname||"Aluno")}</strong>
+          <small style="display:block;color:#667085;margin-top:2px">
+            ${s.correct||0} acerto(s) · bônus velocidade ${s.speedBonus||0}
+          </small>
+        </span>
+        <span class="pts">${s.points||0} pts</span>
+      </div>
+    `).join(""):"<p class='small'>Sem pontuação ainda.</p>";
+
+    if(!isTeacher&&user&&scores[user.uid])$("myScore").textContent=(scores[user.uid].points||0)+" pts";
+  }
+  async function exportCSV(){
+    const s=(await root().child("scores").once("value")).val()||{};
+    const arr=Object.values(s).sort((a,b)=>
+      (b.points||0)-(a.points||0) ||
+      (b.correct||0)-(a.correct||0) ||
+      (a.avgCorrectTime||Number.MAX_SAFE_INTEGER)-(b.avgCorrectTime||Number.MAX_SAFE_INTEGER)
+    );
+    const rows=[["Posição","Apelido","Pontos","Acertos","Bônus velocidade","Tempo médio dos acertos (ms)","Respondidas"]];
+    arr.forEach((x,i)=>rows.push([
+      i+1,x.nickname,x.points||0,x.correct||0,x.speedBonus||0,x.avgCorrectTime||0,x.answered||0
+    ]));
+    const csv=rows.map(r=>r.map(v=>`"${String(v??"").replace(/"/g,'""')}"`).join(";")).join("\n"),
+      blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8"}),
+      a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="ranking_compliance_governanca.csv";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
   function makeQR(){const url=location.origin+location.pathname;$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

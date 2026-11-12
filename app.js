@@ -55,18 +55,73 @@
     const ans=(await root().child(`answers/${q.id}/${user.uid}`).once("value")).val();
     const round=(await root().child(`rounds/${q.id}`).once("value")).val()||{};
     if(c.status==="question"){
-      $("studentState").textContent=ans?"RESPOSTA ENVIADA":"RESPONDA";hide("studentFeedback");show("timerWrap");
+      hide("studentFeedback");
+      show("timerWrap");
+
       const choices=shuffle(q.choices,user.uid+q.id);
-      $("choices").innerHTML=choices.map(o=>`<button class="choice ${ans?.choice===o.id?'selected':''}" data-id="${o.id}" ${ans?'disabled':''}>${esc(o.text)}</button>`).join("");
-      document.querySelectorAll(".choice").forEach(b=>b.addEventListener("click",()=>submit(q.id,b.dataset.id)));
-      const tick=()=>{$("timerBar").style.width=(100*Math.max(0,Number(c.roundEndsAt||0)-Date.now())/QUESTION_MS)+"%"};tick();timer=setInterval(tick,200);
+
+      const renderChoices=()=>{
+        const expired=Date.now()>=Number(c.roundEndsAt||0);
+        $("studentState").textContent=ans?"RESPOSTA ENVIADA":(expired?"TEMPO ESGOTADO":"RESPONDA");
+
+        $("choices").innerHTML=choices.map(o=>`
+          <button class="choice ${ans?.choice===o.id?'selected':''}" data-id="${o.id}"
+            ${(ans||expired)?'disabled':''}>
+            ${esc(o.text)}
+          </button>
+        `).join("");
+
+        if(!ans && !expired){
+          document.querySelectorAll(".choice").forEach(
+            b=>b.addEventListener("click",()=>submit(q.id,b.dataset.id))
+          );
+        }
+      };
+
+      const tick=()=>{
+        const remaining=Math.max(0,Number(c.roundEndsAt||0)-Date.now());
+        $("timerBar").style.width=(100*remaining/QUESTION_MS)+"%";
+        renderChoices();
+
+        if(remaining<=0){
+          clearInterval(timer);
+          $("studentState").textContent=ans?"RESPOSTA ENVIADA":"TEMPO ESGOTADO";
+        }
+      };
+
+      tick();
+      timer=setInterval(tick,200);
     }else if(c.status==="revealed"){
       $("studentState").textContent="RESPOSTA";hide("timerWrap");
       $("choices").innerHTML=q.choices.map(o=>`<div class="teacher-option ${o.id===round.correctId?'correct':''}">${esc(o.text)}</div>`).join("");
       const ok=ans&&ans.choice===round.correctId,f=$("studentFeedback");f.className="feedback "+(ok?"ok":"bad");f.innerHTML=`<strong>${ok?"Você acertou.":"Resposta correta revelada."}</strong><br>${esc(round.explanation||"")}`;show("studentFeedback");
     }
   }
-  async function submit(qid,choice){try{await root().child(`answers/${qid}/${user.uid}`).set({choice,at:firebase.database.ServerValue.TIMESTAMP});renderStudent()}catch(e){alert("Resposta não enviada: "+e.message)}}
+  async function submit(qid,choice){
+    try{
+      const c=(await root().child("config").once("value")).val();
+
+      if(!c || c.status!=="question" || c.questionId!==qid){
+        alert("Esta questão não está mais aberta.");
+        return;
+      }
+
+      if(Date.now()>=Number(c.roundEndsAt||0)){
+        alert("Tempo esgotado. O limite é de 20 segundos.");
+        renderStudent();
+        return;
+      }
+
+      await root().child(`answers/${qid}/${user.uid}`).set({
+        choice,
+        at:firebase.database.ServerValue.TIMESTAMP
+      });
+
+      renderStudent();
+    }catch(e){
+      alert("Resposta não enviada: "+e.message);
+    }
+  }
 
   function initTeacher(){
     const saved=localStorage.getItem("complianceQuizAnswerKey");if(saved){try{key=JSON.parse(saved);$("keyStatus").textContent="Gabarito privado recuperado deste navegador.";$("rememberKey").checked=true}catch{}}
@@ -230,5 +285,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=1700";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=1800";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

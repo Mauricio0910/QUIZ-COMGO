@@ -12,7 +12,7 @@
       "answers": {
         "$questionId": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('game/config/status').val() === 'question' && root.child('game/config/questionId').val() === $questionId && root.child('game/players').child(auth.uid).child('gameId').val() === root.child('game/config/gameId').val()",
+            ".write": "auth != null && ((auth.uid === $uid && !data.exists() && root.child('game/config/status').val() === 'question' && root.child('game/config/questionId').val() === $questionId && now <= root.child('game/config/roundEndsAt').val()) || (auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true))",
             ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/)"
           }
         }
@@ -30,7 +30,7 @@
       "answers": {
         "$questionId": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && !data.exists() && root.child('complianceQuiz/config/status').val() === 'question' && root.child('complianceQuiz/config/questionId').val() === $questionId && root.child('complianceQuiz/players').child(auth.uid).child('gameId').val() === root.child('complianceQuiz/config/gameId').val()",
+            ".write": "auth != null && ((auth.uid === $uid && !data.exists() && root.child('complianceQuiz/config/status').val() === 'question' && root.child('complianceQuiz/config/questionId').val() === $questionId && now <= root.child('complianceQuiz/config/roundEndsAt').val()) || (auth.token.email === 'mauricio.santana7@gmail.com' && auth.token.email_verified === true))",
             ".validate": "newData.hasChildren(['choice','at']) && newData.child('choice').isString() && newData.child('choice').val().matches(/^[abcde]$/)"
           }
         }

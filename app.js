@@ -8,7 +8,7 @@
   const CORRECT_BASE_POINTS=1000;
   const MAX_SPEED_BONUS=500;
   const MAX_POINTS_PER_QUESTION=CORRECT_BASE_POINTS+MAX_SPEED_BONUS;
-  let user=null, teacher=false, key=null, config=null, timer=null, answersRef=null, serverTimeOffset=0;
+  let user=null, teacher=false, key=null, config=null, timer=null, answersRef=null, serverTimeOffset=0, pendingAnswer=null;
   firebase.initializeApp(window.COMPLIANCE_FIREBASE_CONFIG);
   const auth=firebase.auth(), db=firebase.database(), root=()=>db.ref(ROOT);
   db.ref(".info/serverTimeOffset").on("value",s=>{
@@ -56,7 +56,8 @@
     if(c.status==="lobby"){$("studentState").textContent="LOBBY";$("studentTitle").textContent="Você entrou. Aguarde o professor iniciar.";$("qCounter").textContent="—";$("choices").innerHTML="";hide("timerWrap");hide("studentFeedback");return}
     if(c.status==="finished"){$("studentState").textContent="ENCERRADO";$("studentTitle").textContent="Quiz encerrado. Confira o ranking final.";$("choices").innerHTML="";hide("timerWrap");return}
     const q=qById(c.questionId);if(!q)return; const idx=QUESTIONS.findIndex(x=>x.id===q.id)+1;$("qCounter").textContent=`${idx}/${QUESTIONS.length}`;$("studentTitle").textContent=q.question;
-    const ans=(await root().child(`answers/${q.id}/${user.uid}`).once("value")).val();
+    const remoteAns=(await root().child(`answers/${q.id}/${user.uid}`).once("value")).val();
+    const ans=remoteAns || (pendingAnswer?.qid===q.id ? {choice:pendingAnswer.choice,pending:true} : null);
     const round=(await root().child(`rounds/${q.id}`).once("value")).val()||{};
     if(c.status==="question"){
       hide("studentFeedback");
@@ -94,7 +95,7 @@
       };
 
       tick();
-      timer=setInterval(tick,200);
+      timer=setInterval(tick,250);
     }else if(c.status==="revealed"){
       $("studentState").textContent="RESPOSTA";hide("timerWrap");
       $("choices").innerHTML=q.choices.map(o=>`<div class="teacher-option ${o.id===round.correctId?'correct':''}">${esc(o.text)}</div>`).join("");
@@ -102,27 +103,48 @@
     }
   }
   async function submit(qid,choice){
+    // Bloqueia a interface imediatamente, sem esperar nova leitura do Firebase.
+    if(pendingAnswer)return;
+
+    pendingAnswer={qid,choice};
+
+    const stateEl=$("studentState");
+    if(stateEl)stateEl.textContent="RESPOSTA ENVIADA";
+
+    document.querySelectorAll(".choice").forEach(btn=>{
+      btn.disabled=true;
+      if(btn.dataset.id===choice)btn.classList.add("selected");
+    });
+
     try{
-      const c=(await root().child("config").once("value")).val();
-
-      if(!c || c.status!=="question" || c.questionId!==qid){
-        alert("Esta questão não está mais aberta.");
-        return;
-      }
-
-      if(serverNow()>=Number(c.roundEndsAt||0)){
-        alert("Tempo esgotado. O limite é de 20 segundos.");
-        renderStudent();
-        return;
-      }
-
+      // A própria regra do Firebase valida:
+      // - se a questão ainda está aberta;
+      // - se o aluno ainda não respondeu;
+      // - se o limite de 20 segundos não foi ultrapassado.
       await root().child(`answers/${qid}/${user.uid}`).set({
         choice,
         at:firebase.database.ServerValue.TIMESTAMP
       });
 
-      renderStudent();
+      pendingAnswer=null;
+      // Não força uma releitura pesada; os listeners já sincronizam a tela.
     }catch(e){
+      pendingAnswer=null;
+
+      // Reabre a interface apenas se ainda houver tempo.
+      const remaining=config?.roundEndsAt
+        ? Math.max(0,Number(config.roundEndsAt)-serverNow())
+        : 0;
+
+      if(stateEl)stateEl.textContent=remaining>0?"RESPONDA":"TEMPO ESGOTADO";
+
+      if(remaining>0){
+        document.querySelectorAll(".choice").forEach(btn=>{
+          btn.disabled=false;
+          btn.classList.remove("selected");
+        });
+      }
+
       alert("Resposta não enviada: "+e.message);
     }
   }
@@ -289,5 +311,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=1900";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=2000";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

@@ -90,53 +90,90 @@
   async function finish(){await recompute();await root().child("config").update({status:"finished",updatedAt:firebase.database.ServerValue.TIMESTAMP})}
   async function recompute(){
     if(!teacher||!key)return;
+
     const [ps,as,rs]=await Promise.all([
       root().child("players").once("value"),
       root().child("answers").once("value"),
       root().child("rounds").once("value")
     ]);
-    const players=ps.val()||{},answers=as.val()||{},rounds=rs.val()||{},scores={};
 
+    const players=ps.val()||{};
+    const answers=as.val()||{};
+    const rounds=rs.val()||{};
+    const scores={};
+
+    // Estrutura inicial do placar.
     for(const [uid,p] of Object.entries(players)){
-      let points=0,correct=0,totalTime=0,answered=0,speedBonusTotal=0,correctTime=0;
+      scores[uid]={
+        nickname:p.nickname,
+        points:0,
+        correct:0,
+        answered:0,
+        totalTime:0,
+        correctTime:0,
+        speedBonus:0,
+        avgCorrectTime:0
+      };
+    }
 
-      for(const q of QUESTIONS){
-        const a=answers[q.id]?.[uid],k=key.answers[q.id],r=rounds[q.id];
-        if(!a||!k||!r)continue;
+    // Calcula questão por questão.
+    for(const q of QUESTIONS){
+      const k=key.answers[q.id];
+      const r=rounds[q.id];
+      if(!k||!r)continue;
 
-        answered++;
+      const correctResponses=[];
+
+      // Primeiro registra respostas e tempos.
+      for(const [uid,p] of Object.entries(players)){
+        const a=answers[q.id]?.[uid];
+        if(!a)continue;
+
         const elapsed=Math.max(0,Number(a.at)-Number(r.startedAt));
-        totalTime+=elapsed;
+        scores[uid].answered++;
+        scores[uid].totalTime+=elapsed;
 
         if(a.choice===k.correctId){
-          correct++;
-          correctTime+=elapsed;
-
-          // 1.000 pontos pelo acerto + até 500 pela rapidez.
-          // Resposta instantânea = 1.500 pontos.
-          // Aos 10 s = 1.250 pontos.
-          // Aos 20 s ou mais = 1.000 pontos.
-          const speedBonus=Math.max(
-            0,
-            Math.round(MAX_SPEED_BONUS*(1-Math.min(elapsed,QUESTION_MS)/QUESTION_MS))
-          );
-
-          speedBonusTotal+=speedBonus;
-          points+=CORRECT_BASE_POINTS+speedBonus;
+          scores[uid].correct++;
+          scores[uid].correctTime+=elapsed;
+          correctResponses.push({uid,elapsed});
         }
       }
 
-      scores[uid]={
-        nickname:p.nickname,
-        points,
-        correct,
-        answered,
-        totalTime,
-        correctTime,
-        speedBonus:speedBonusTotal,
-        avgCorrectTime:correct?Math.round(correctTime/correct):0,
-        maxPossible:correct*MAX_POINTS_PER_QUESTION
-      };
+      // Nenhum acerto: ninguém pontua nesta questão.
+      if(!correctResponses.length)continue;
+
+      // Ordena apenas quem acertou: o mais rápido vem primeiro.
+      correctResponses.sort((a,b)=>a.elapsed-b.elapsed);
+
+      const fastest=correctResponses[0].elapsed;
+      const slowest=correctResponses[correctResponses.length-1].elapsed;
+
+      for(let i=0;i<correctResponses.length;i++){
+        const {uid,elapsed}=correctResponses[i];
+
+        let speedBonus;
+
+        if(correctResponses.length===1 || slowest===fastest){
+          // Se só houve um acerto, ou todos acertaram no mesmo tempo,
+          // o acerto recebe a pontuação máxima.
+          speedBonus=500;
+        }else{
+          // Bônus relativo entre os alunos que acertaram:
+          // mais rápido = 500; mais lento = 0; demais = proporcional.
+          const ratio=(slowest-elapsed)/(slowest-fastest);
+          speedBonus=Math.round(500*ratio);
+        }
+
+        scores[uid].speedBonus+=speedBonus;
+        scores[uid].points+=1000+speedBonus;
+      }
+    }
+
+    // Métricas de desempate.
+    for(const uid of Object.keys(scores)){
+      const s=scores[uid];
+      s.avgCorrectTime=s.correct?Math.round(s.correctTime/s.correct):0;
     }
 
     await root().child("scores").set(scores);
@@ -186,5 +223,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname;$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=1600";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

@@ -1,17 +1,143 @@
 <!doctype html>
-<html lang="pt-BR"><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#12345b"><title>Compliance & Governança Quiz Live — FACDO</title>
-<link rel="stylesheet" href="style.css?v=2000"></head><body>
-<header class="topbar"><div class="brand"><img src="facdo-logo.png?v=2000" alt="Faculdade Católica Dom Orione" onerror="this.style.display='none'"><div><strong>FACDO</strong><span>Direito · Compliance e Governança</span></div></div><div id="connectionBadge" class="badge">conectando…</div></header>
-<main class="shell">
-<section id="loading" class="card center"><div class="spinner"></div><h1>Compliance & Governança Quiz Live</h1><p>Preparando a sala…</p></section>
-<section id="studentJoin" class="card hidden"><div class="eyebrow">ALUNO</div><h1>Entre no quiz</h1><p>Use apenas seu primeiro nome ou um apelido.</p><label>Apelido<input id="nickname" maxlength="28" placeholder="Ex.: Ana"></label><button id="joinBtn" class="primary">Entrar na sala</button><p id="joinError" class="error"></p></section>
-<section id="studentGame" class="hidden"><div class="status-grid"><div class="mini-card"><span>Jogador</span><strong id="playerName">—</strong></div><div class="mini-card"><span>Pontuação</span><strong id="myScore">0</strong></div><div class="mini-card"><span>Questão</span><strong id="qCounter">—</strong></div></div><div id="studentMainCard" class="card"><div id="studentState" class="eyebrow">AGUARDANDO</div><h2 id="studentTitle">Aguarde o professor iniciar.</h2><div id="timerWrap" class="timer hidden"><div id="timerBar"></div></div><div id="choices" class="choices"></div><div id="studentFeedback" class="feedback hidden"></div></div><div class="card"><h3>Ranking ao vivo</h3><div id="studentRanking" class="ranking"></div></div></section>
-<section id="teacherPanel" class="hidden"><div class="teacher-head"><div><div class="eyebrow">PROFESSOR</div><h1>Painel de condução</h1></div><button id="teacherLoginBtn" class="secondary">Entrar com Google</button></div><div id="teacherAuthMsg" class="card"><p>Entre com a conta Google autorizada.</p></div>
-<div id="teacherControls" class="hidden"><div class="grid2"><div class="card"><h3>1. Gabarito privado</h3><p>Selecione o arquivo privado. Ele não é enviado ao GitHub.</p><input id="answerFile" type="file" accept=".json"><label class="check"><input id="rememberKey" type="checkbox"> Lembrar gabarito neste navegador</label><div id="keyStatus" class="note">Nenhum gabarito carregado.</div></div>
-<div class="card"><h3>2. Sala</h3><div class="button-row"><button id="newGameBtn" class="danger">Nova sala / zerar</button><button id="startBtn" class="primary">Iniciar jogo</button></div><p>Status: <strong id="teacherStatus">—</strong></p><p>Participantes: <strong id="playerCount">0</strong></p><p>Questão: <strong id="teacherCounter">—</strong></p></div></div>
-<div class="card"><div class="teacher-question-head"><div><div class="eyebrow">QUESTÃO ATUAL</div><h2 id="teacherQuestion">Aguardando início.</h2></div><div id="teacherTimer" class="big-timer">—</div></div><div id="teacherOptions" class="teacher-options"></div><div class="button-row"><button id="revealBtn" class="secondary">Mostrar resposta</button><button id="nextBtn" class="primary">Próxima pergunta</button><button id="finishBtn" class="danger">Encerrar</button></div></div>
-<div class="grid2"><div class="card"><h3>Ranking</h3><div id="teacherRanking" class="ranking"></div><button id="exportBtn" class="secondary full">Exportar ranking CSV</button></div><div class="card"><h3>Link para alunos</h3><div id="qr"></div><p id="studentLink" class="small break"></p></div></div></div></section>
-</main><footer>FACDO · Curso de Direito · atividade formativa de revisão</footer>
-<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script><script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script><script src="firebase-config.js?v=2000"></script><script src="questions.js?v=2000"></script><script src="app.js?v=2000"></script></body></html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <title>GEDO Quiz Live — Compliance e Governança</title>
+  <link rel="stylesheet" href="style.css?v=2100">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">GEDO</div>
+      <strong>Quiz Live — Compliance e Governança</strong>
+      <span>Versão otimizada para smartphone</span>
+    </div>
+    <div id="connectionBadge" class="badge">Conectando…</div>
+  </header>
+
+  <main class="shell">
+    <section id="loading" class="card hero center">
+      <div class="spinner"></div>
+      <div class="eyebrow">GEDO</div>
+      <h1>Compliance e Governança Quiz Live</h1>
+      <p>Ambiente interativo para revisão, participação e ranking em tempo real.</p>
+    </section>
+
+    <section id="studentJoin" class="card hidden">
+      <div class="eyebrow">Entrar na sala</div>
+      <h2>Participação do aluno</h2>
+      <p>Digite seu nome para entrar no quiz. Em smartphones, basta tocar uma vez nas alternativas.</p>
+      <label for="nickname">Seu nome</label>
+      <input id="nickname" type="text" maxlength="28" placeholder="Ex.: Ana Clara">
+      <div class="button-row">
+        <button id="joinBtn" class="primary full">Entrar na sala</button>
+      </div>
+      <p id="joinError" class="error"></p>
+    </section>
+
+    <section id="studentGame" class="hidden">
+      <div class="status-grid">
+        <div class="mini-card"><span>Questão</span><strong id="qCounter">0/0</strong></div>
+        <div class="mini-card"><span>Status</span><strong id="studentState">—</strong></div>
+        <div class="mini-card"><span>Minha pontuação</span><strong id="myScore">0 pts</strong></div>
+      </div>
+
+      <div id="studentMainCard" class="card">
+        <div class="eyebrow">Pergunta atual</div>
+        <h2 id="studentTitle">Aguardando...</h2>
+        <div id="timerWrap" class="hidden">
+          <div class="timer"><div id="timerBar"></div></div>
+        </div>
+        <div id="choices"></div>
+        <div id="studentFeedback" class="feedback hidden"></div>
+      </div>
+
+      <div class="card">
+        <h3>Ranking parcial</h3>
+        <div id="studentRanking" class="ranking"></div>
+      </div>
+    </section>
+
+    <section id="teacherPanel" class="hidden">
+      <div class="teacher-head">
+        <div>
+          <div class="eyebrow">Painel do professor</div>
+          <h2>Controle da sala e acompanhamento</h2>
+          <p>Gerencie a sala, inicie questões e acompanhe o ranking.</p>
+        </div>
+        <div class="badge">Professor</div>
+      </div>
+
+      <div id="teacherLogin" class="card">
+        <p id="teacherAuthMsg">Entre com a conta Google autorizada.</p>
+        <button id="teacherLoginBtn" class="primary">Entrar com Google</button>
+      </div>
+
+      <div id="teacherControls" class="hidden">
+        <div class="grid2">
+          <div class="card">
+            <h3>1. Gabarito</h3>
+            <label for="answerFile">Arquivo JSON do gabarito</label>
+            <input id="answerFile" type="file" accept=".json,application/json">
+            <label class="check"><input id="rememberKey" type="checkbox"> lembrar neste navegador</label>
+            <div id="keyStatus" class="note">Nenhum gabarito carregado.</div>
+          </div>
+
+          <div class="card">
+            <h3>2. Sala</h3>
+            <div class="button-row">
+              <button id="newGameBtn" class="secondary">Nova sala / Zerar</button>
+              <button id="startBtn" class="primary">Iniciar jogo</button>
+              <button id="exportBtn" class="secondary">Exportar CSV</button>
+            </div>
+            <p class="note">Jogadores na sala: <strong id="playerCount">0</strong></p>
+            <p class="note">Questão atual: <strong id="teacherCounter">—</strong></p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="teacher-question-head">
+            <div>
+              <div class="eyebrow">Rodada</div>
+              <h3 id="teacherQuestion">Aguardando início</h3>
+              <p id="teacherStatus" class="note">Status: lobby</p>
+            </div>
+            <div class="big-timer" id="teacherTimer">20.0s</div>
+          </div>
+          <div id="teacherOptions" class="teacher-options"></div>
+          <div class="button-row">
+            <button id="revealBtn" class="secondary">Revelar resposta</button>
+            <button id="nextBtn" class="primary">Próxima questão</button>
+            <button id="finishBtn" class="danger">Encerrar</button>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <div class="card">
+            <h3>Ranking</h3>
+            <div id="teacherRanking" class="ranking"></div>
+          </div>
+          <div class="card center">
+            <h3>Acesso do aluno</h3>
+            <div id="qr"></div>
+            <p id="studentLink" class="small break"></p>
+            <p class="small">Compartilhe este link com a turma.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>GEDO · Quiz interativo de Compliance e Governança</footer>
+
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+  <script src="questions.js?v=2100"></script>
+  <script src="firebase-config.js?v=2100"></script>
+  <script src="app.js?v=2100"></script>
+</body>
+</html>

@@ -51,100 +51,133 @@
   }
   function shuffle(a,seed){let h=2166136261;for(const c of seed){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}a=[...a];for(let i=a.length-1;i>0;i--){h^=h<<13;h^=h>>>17;h^=h<<5;let j=(h>>>0)%(i+1);[a[i],a[j]]=[a[j],a[i]]}return a}
   async function renderStudent(){
-    clearInterval(timer); const c=config||{};
-    const sc=(await root().child("scores/"+user.uid).once("value")).val();$("myScore").textContent=sc?.points||0;
-    if(c.status==="lobby"){$("studentState").textContent="LOBBY";$("studentTitle").textContent="Você entrou. Aguarde o professor iniciar.";$("qCounter").textContent="—";$("choices").innerHTML="";hide("timerWrap");hide("studentFeedback");return}
-    if(c.status==="finished"){$("studentState").textContent="ENCERRADO";$("studentTitle").textContent="Quiz encerrado. Confira o ranking final.";$("choices").innerHTML="";hide("timerWrap");return}
-    const q=qById(c.questionId);if(!q)return; const idx=QUESTIONS.findIndex(x=>x.id===q.id)+1;$("qCounter").textContent=`${idx}/${QUESTIONS.length}`;$("studentTitle").textContent=q.question;
+    clearInterval(timer);
+    const c=config||{};
+    const sc=(await root().child("scores/"+user.uid).once("value")).val();
+    $("myScore").textContent=(sc?.points||0)+" pts";
+
+    if(c.status==="lobby"){
+      $("studentState").textContent="AGUARDANDO INÍCIO";
+      $("qCounter").textContent=`0/${QUESTIONS.length}`;
+      $("studentTitle").textContent="A sala está aberta. Aguarde o professor iniciar.";
+      $("choices").innerHTML="";
+      hide("timerWrap");
+      hide("studentFeedback");
+      return;
+    }
+
+    if(c.status==="finished"){
+      $("studentState").textContent="QUIZ ENCERRADO";
+      $("studentTitle").textContent="Confira sua classificação no ranking final.";
+      $("qCounter").textContent=`${QUESTIONS.length}/${QUESTIONS.length}`;
+      $("choices").innerHTML="";
+      hide("timerWrap");
+      hide("studentFeedback");
+      return;
+    }
+
+    const q=qById(c.questionId);
+    if(!q)return;
+
+    const idx=QUESTIONS.findIndex(x=>x.id===q.id)+1;
+    $("qCounter").textContent=`${idx}/${QUESTIONS.length}`;
+    $("studentTitle").textContent=q.question;
+
     const remoteAns=(await root().child(`answers/${q.id}/${user.uid}`).once("value")).val();
     const ans=remoteAns || (pendingAnswer?.qid===q.id ? {choice:pendingAnswer.choice,pending:true} : null);
-    const round=(await root().child(`rounds/${q.id}`).once("value")).val()||{};
+
     if(c.status==="question"){
       hide("studentFeedback");
       show("timerWrap");
 
-      const choices=shuffle(q.choices,user.uid+q.id);
+      const choices=shuffle([...q.choices], user.uid+q.id);
+      const expired=serverNow()>=Number(c.roundEndsAt||0);
 
-      const renderChoices=()=>{
-        const expired=serverNow()>=Number(c.roundEndsAt||0);
-        $("studentState").textContent=ans?"RESPOSTA ENVIADA":(expired?"TEMPO ESGOTADO":"RESPONDA");
+      $("studentState").textContent=ans ? "RESPOSTA ENVIADA" : (expired ? "TEMPO ESGOTADO" : "RESPONDA AGORA");
 
-        $("choices").innerHTML=choices.map(o=>`
-          <button class="choice ${ans?.choice===o.id?'selected':''}" data-id="${o.id}"
-            ${(ans||expired)?'disabled':''}>
-            ${esc(o.text)}
-          </button>
-        `).join("");
+      $("choices").innerHTML=choices.map(o=>`
+        <button
+          class="choice ${ans?.choice===o.id?'selected':''}"
+          type="button"
+          data-id="${o.id}"
+          ${(ans||expired)?'disabled':''}>
+          <span class="choice-letter">${o.id.toUpperCase()}</span>
+          <span class="choice-text">${esc(o.text)}</span>
+        </button>
+      `).join("");
 
-        if(!ans && !expired){
-          document.querySelectorAll(".choice").forEach(
-            b=>b.addEventListener("click",()=>submit(q.id,b.dataset.id))
-          );
-        }
-      };
+      if(!ans && !expired){
+        document.querySelectorAll("#choices .choice").forEach(btn=>{
+          const handler=(ev)=>{
+            ev.preventDefault();
+            ev.stopPropagation();
+            submit(q.id, btn.dataset.id);
+          };
+          btn.addEventListener("pointerup", handler, {once:true});
+          btn.addEventListener("click", handler, {once:true});
+        });
+      }
 
       const tick=()=>{
         const remaining=Math.max(0,Number(c.roundEndsAt||0)-serverNow());
         $("timerBar").style.width=(100*remaining/QUESTION_MS)+"%";
-        renderChoices();
-
         if(remaining<=0){
           clearInterval(timer);
-          $("studentState").textContent=ans?"RESPOSTA ENVIADA":"TEMPO ESGOTADO";
+          if(!pendingAnswer && !remoteAns){
+            $("studentState").textContent="TEMPO ESGOTADO";
+            document.querySelectorAll("#choices .choice").forEach(btn=>btn.disabled=true);
+          }
         }
       };
 
       tick();
-      timer=setInterval(tick,250);
-    }else if(c.status==="revealed"){
-      $("studentState").textContent="RESPOSTA";hide("timerWrap");
-      $("choices").innerHTML=q.choices.map(o=>`<div class="teacher-option ${o.id===round.correctId?'correct':''}">${esc(o.text)}</div>`).join("");
-      const ok=ans&&ans.choice===round.correctId,f=$("studentFeedback");f.className="feedback "+(ok?"ok":"bad");f.innerHTML=`<strong>${ok?"Você acertou.":"Resposta correta revelada."}</strong><br>${esc(round.explanation||"")}`;show("studentFeedback");
+      timer=setInterval(tick,100);
+      return;
     }
+
+    hide("timerWrap");
+    show("studentFeedback");
+    const k=key?.answers?.[q.id];
+    const corr=q.choices.find(x=>x.id===k?.correctId);
+    $("studentState").textContent="RESPOSTA CORRETA";
+    $("choices").innerHTML=q.choices.map(o=>`
+      <button class="teacher-option ${k?.correctId===o.id?'correct':''}" disabled>
+        ${esc(o.id.toUpperCase()+") "+o.text)}
+      </button>
+    `).join("");
+    $("studentFeedback").className="feedback "+((ans?.choice===k?.correctId)?"ok":"bad");
+    $("studentFeedback").innerHTML=(ans?.choice===k?.correctId
+      ? `<strong>Você acertou.</strong><br>Pontuação calculada por acerto + rapidez.`
+      : `<strong>Você errou.</strong><br>Resposta correta: <strong>${esc(corr?.id?.toUpperCase()||"")} ${esc(corr?.text||"")}</strong>`);
   }
+
   async function submit(qid,choice){
-    // Bloqueia a interface imediatamente, sem esperar nova leitura do Firebase.
-    if(pendingAnswer)return;
+    if(pendingAnswer) return;
 
     pendingAnswer={qid,choice};
 
-    const stateEl=$("studentState");
-    if(stateEl)stateEl.textContent="RESPOSTA ENVIADA";
-
-    document.querySelectorAll(".choice").forEach(btn=>{
+    $("studentState").textContent="RESPOSTA ENVIADA";
+    document.querySelectorAll("#choices .choice").forEach(btn=>{
       btn.disabled=true;
-      if(btn.dataset.id===choice)btn.classList.add("selected");
+      if(btn.dataset.id===choice) btn.classList.add("selected");
     });
 
     try{
-      // A própria regra do Firebase valida:
-      // - se a questão ainda está aberta;
-      // - se o aluno ainda não respondeu;
-      // - se o limite de 20 segundos não foi ultrapassado.
       await root().child(`answers/${qid}/${user.uid}`).set({
         choice,
         at:firebase.database.ServerValue.TIMESTAMP
       });
-
       pendingAnswer=null;
-      // Não força uma releitura pesada; os listeners já sincronizam a tela.
     }catch(e){
       pendingAnswer=null;
-
-      // Reabre a interface apenas se ainda houver tempo.
-      const remaining=config?.roundEndsAt
-        ? Math.max(0,Number(config.roundEndsAt)-serverNow())
-        : 0;
-
-      if(stateEl)stateEl.textContent=remaining>0?"RESPONDA":"TEMPO ESGOTADO";
-
+      const remaining=config?.roundEndsAt ? Math.max(0,Number(config.roundEndsAt)-serverNow()) : 0;
+      $("studentState").textContent=remaining>0 ? "RESPONDA AGORA" : "TEMPO ESGOTADO";
       if(remaining>0){
-        document.querySelectorAll(".choice").forEach(btn=>{
+        document.querySelectorAll("#choices .choice").forEach(btn=>{
           btn.disabled=false;
           btn.classList.remove("selected");
         });
       }
-
       alert("Resposta não enviada: "+e.message);
     }
   }
@@ -311,5 +344,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=2000";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=2100";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();

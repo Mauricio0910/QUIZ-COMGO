@@ -394,5 +394,5 @@
     a.click();
     URL.revokeObjectURL(a.href);
   }
-  function makeQR(){const url=location.origin+location.pathname+"?v=2130";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
+  function makeQR(){const url=location.origin+location.pathname+"?v=2150";$("studentLink").textContent=url;if(window.QRCode)QRCode.toCanvas(url,{width:190,margin:1},(e,c)=>{if(!e){$("qr").innerHTML="";$("qr").appendChild(c)}})}
 })();
